@@ -96,12 +96,10 @@ module "security_groups" {
   ]
 }
 
-
 # Módulo de la comunidad para EFS
 module "efs" {
   source  = "terraform-aws-modules/efs/aws"
-  version = "1.2.0"  # Asegúrate de usar la última versión compatible
-
+  version = "1.2.0"  
   name = "wordpress-efs"
 
   # Crear targets de montaje en las subredes privadas
