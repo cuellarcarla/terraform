@@ -1,8 +1,8 @@
-aws_region = "us-west-1"
+aws_region = "us-east-1"
 vpc_cidr = "10.0.0.0/16"
 public_subnets_cidr = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets_cidr = ["10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-availability_zones = ["us-west-1a", "us-west-1b"]
+availability_zones = ["us-east-1a", "us-east-1b"]
 ami_id = "ami-04b4f1a9cf54c11d0"
 instance_type = "t2.micro"
 key_name = "vockey"

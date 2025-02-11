@@ -28,7 +28,7 @@ module "vpc" {
 # Módulo de la comunidad para Security Groups 
 module "security_groups" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.0.0"  # Última versión
+  version = "5.0.0"  
 
   name        = "wordpress-sg"
   description = "Security groups for WordPress infrastructure"
@@ -115,7 +115,7 @@ module "efs" {
 # Módulo de la comunidad para HAProxy (EC2 pública) 
 module "haproxy" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "4.0.0"  # Última versión
+  version = "4.0.0" 
 
   name          = "haproxy-lb"
   ami           = var.ami_id
@@ -134,7 +134,7 @@ module "haproxy" {
 # Módulo de la comunidad para las instancias frontales (WordPress) 
 module "frontend" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "4.0.0"  # Última versión
+  version = "4.0.0" 
 
   for_each = toset(["frontend-1", "frontend-2"])
 
@@ -158,7 +158,7 @@ module "frontend" {
 # Módulo de la comunidad para MySQL (EC2 privada) 
 module "mysql" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "4.0.0"  # Última versión
+  version = "4.0.0" 
 
   name          = "mysql-db"
   ami           = var.ami_id
