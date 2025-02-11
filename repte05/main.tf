@@ -103,10 +103,14 @@ module "efs" {
 
   name = "wordpress-efs"
 
-  # Montar EFS en las subredes privadas
+  # Montar EFS solo en las subredes de frontend-1 y frontend-2
   mount_targets = {
-    for idx, subnet in module.vpc.private_subnets : idx => {
-      subnet_id       = subnet
+    "frontend-1" = {
+      subnet_id       = module.vpc.private_subnets[0] # private-us-east-1a
+      security_groups = [module.security_groups.security_group_id]
+    }
+    "frontend-2" = {
+      subnet_id       = module.vpc.private_subnets[1] # private-us-east-1b
       security_groups = [module.security_groups.security_group_id]
     }
   }
@@ -121,6 +125,7 @@ module "efs" {
     }
   }
 }
+
 
 
 # Módulo de la comunidad para HAProxy (EC2 pública) 
