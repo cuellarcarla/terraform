@@ -100,13 +100,24 @@ module "security_groups" {
 module "efs" {
   source  = "terraform-aws-modules/efs/aws"
   version = "1.2.0"  
+
   name = "wordpress-efs"
 
-  # Crear targets de montaje en las subredes privadas
+  # Montar EFS en las subredes privadas
   mount_targets = {
     for idx, subnet in module.vpc.private_subnets : idx => {
-      subnet_id        = subnet
-      security_groups  = [module.security_groups.security_group_id]  
+      subnet_id       = subnet
+      security_groups = [module.security_groups.security_group_id]
+    }
+  }
+
+  # Configuración del grupo de seguridad
+  security_group_description = "Security group for EFS"
+  security_group_vpc_id      = module.vpc.vpc_id
+  security_group_rules = {
+    nfs = {
+      description = "NFS access from frontend instances"
+      cidr_blocks = module.vpc.private_subnets_cidr_blocks
     }
   }
 }
@@ -134,7 +145,7 @@ module "haproxy" {
 # Módulo de la comunidad para las instancias frontales (WordPress) 
 module "frontend" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "4.0.0" 
+  version = "4.0.0"
 
   for_each = toset(["frontend-1", "frontend-2"])
 
@@ -143,7 +154,9 @@ module "frontend" {
   instance_type = var.instance_type
   key_name      = var.key_name
 
-  subnet_id              = module.vpc.private_subnets[0]
+  # Asignar dinámicamente las subredes privadas
+  subnet_id = each.key == "frontend-1" ? module.vpc.private_subnets[0] : module.vpc.private_subnets[1]
+
   vpc_security_group_ids = [module.security_groups.security_group_id]
 
   user_data = templatefile("user_data_frontend.sh", {
