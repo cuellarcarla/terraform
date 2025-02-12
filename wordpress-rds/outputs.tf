@@ -7,3 +7,7 @@ output "ec2_public_ip" {
   description = "Dirección IP pública de la instancia EC2"
   value       = module.ec2.public_ip
 }
+
+output "db_instance_name" {
+  value = try(aws_db_instance.this[0].identifier, "")
+}
