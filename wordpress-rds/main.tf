@@ -89,11 +89,10 @@ module "ec2" {
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
 
   user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
-    db_host     = module.rds.db_instance_endpoint
-    db_name     = var.db_name
-    db_user     = var.db_username
-    db_password = var.db_password
-  })
-
-  depends_on = [module.rds]
+      db_host     = module.rds.db_instance_endpoint
+      db_name     = var.db_name
+      db_user     = var.db_username
+      db_password = var.db_password
+      depends_on = [module.rds]
+   })
 }
