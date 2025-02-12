@@ -1,0 +1,97 @@
+provider "aws" {
+  region = var.aws_region
+}
+
+# Obtener la VPC y subnets por defecto
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+# Crear RDS con el módulo de la comunidad
+module "rds" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "5.0.0"
+
+  identifier        = "my-rds"
+  engine           = "mysql"
+  engine_version   = "8.0"
+  instance_class   = "db.t3.micro"
+  allocated_storage = 20
+
+  db_name  = var.db_name
+  username = var.db_username
+  password = var.db_password
+
+  publicly_accessible   = false
+  skip_final_snapshot  = true
+  deletion_protection  = false
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  subnet_ids            = data.aws_subnets.default.ids
+}
+
+# Crear Security Group para RDS
+resource "aws_security_group" "rds_sg" {
+  name_prefix = "rds-sg"
+  description = "Permitir acceso MySQL desde la EC2"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
+  }
+}
+
+# Crear Security Group para EC2
+resource "aws_security_group" "ec2_sg" {
+  name_prefix = "ec2-sg"
+  description = "Permitir tráfico HTTP y SSH"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Crear la EC2 con el módulo de la comunidad
+module "ec2" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "5.0.0"
+
+  name           = "wordpress-ec2"
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  key_name      = var.key_name
+
+  associate_public_ip_address = var.public_ip
+  subnet_id                   = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
+
+  user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
+    db_host     = module.rds.db_instance_endpoint
+    db_name     = var.db_name
+    db_user     = var.db_username
+    db_password = var.db_password
+  })
+
+  depends_on = [module.rds]
+}
