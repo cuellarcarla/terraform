@@ -74,7 +74,7 @@ resource "aws_security_group" "ec2_sg" {
 # Crear la EC2 con el módulo de la comunidad
 module "ec2" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "6.1.0"
+  version = "5.7.1"
 
   name           = "wordpress-ec2"
   ami            = var.ami_id

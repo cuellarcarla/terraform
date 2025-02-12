@@ -11,6 +11,8 @@ output "db_instance_arn" {
   value = module.rds.db_instance_arn
 }
 
-output "db_instance_id" {
-  value = module.rds.db_instance_id
+output "db_instance_status" {
+  value = module.rds.db_instance_status
 }
+
+
