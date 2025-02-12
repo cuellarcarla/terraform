@@ -34,6 +34,9 @@ module "rds" {
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   subnet_ids             = data.aws_subnets.default_subnets.ids
+
+  major_engine_version   = "8.0"       
+  family                 = "mysql8.0"  
 }
 
 # Crear Security Group para RDS
