@@ -1,4 +1,3 @@
-# outputs.tf del módulo rds
 output "db_instance_identifier" {
   value = module.rds.db_instance_identifier
 }
