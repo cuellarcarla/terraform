@@ -1,13 +1,16 @@
-output "rds_endpoint" {
-  description = "Endpoint de la base de datos RDS"
-  value       = module.rds.db_instance_endpoint
+# outputs.tf del módulo rds
+output "db_instance_identifier" {
+  value = module.rds.db_instance_identifier
 }
 
-output "ec2_public_ip" {
-  description = "Dirección IP pública de la instancia EC2"
-  value       = module.ec2.public_ip
+output "db_instance_endpoint" {
+  value = module.rds.db_instance_endpoint
 }
 
-output "db_instance_name" {
-  value = try(aws_db_instance.this[0].identifier, "")
+output "db_instance_arn" {
+  value = module.rds.db_instance_arn
+}
+
+output "db_instance_id" {
+  value = module.rds.db_instance_id
 }
