@@ -44,3 +44,13 @@ variable "public_ip" {
   type        = bool
   default     = true
 }
+
+variable "major_engine_version" {
+  description = "Versión principal del motor de base de datos"
+  type        = string
+}
+
+variable "family" {
+  description = "Familia de parámetros de la base de datos"
+  type        = string
+}
