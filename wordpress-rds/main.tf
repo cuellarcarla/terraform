@@ -24,6 +24,7 @@ module "rds" {
   instance_class    = "db.t3.micro"
   allocated_storage = 20
 
+  manage_master_user_password = false
   db_name  = var.db_name
   username = var.db_username
   password = var.db_password
@@ -56,7 +57,7 @@ resource "aws_security_group" "rds_sg" {
 # Crear Security Group para EC2
 resource "aws_security_group" "ec2_sg" {
   name_prefix = "ec2-sg"
-  description = "Permitir tráfico HTTP y SSH"
+  description = "Permitir trafico HTTP y SSH"
   vpc_id      = data.aws_vpc.default_vpc.id
 
   ingress {
@@ -70,6 +71,13 @@ resource "aws_security_group" "ec2_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # -1 means all protocols
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -89,10 +97,10 @@ module "ec2" {
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
 
   user_data = templatefile("${path.module}/templates/user_data.sh.tpl", {
-      db_host     = module.rds.db_instance_endpoint
+      db_host     = split(":", module.rds.db_instance_endpoint)[0]
       db_name     = var.db_name
       db_user     = var.db_username
       db_password = var.db_password
-      depends_on = [module.rds]
    })
+   depends_on = [module.rds]
 }
