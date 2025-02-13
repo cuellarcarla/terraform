@@ -13,8 +13,14 @@ systemctl start apache2
 cd /var/www/html
 wget https://wordpress.org/latest.tar.gz
 tar -xzf latest.tar.gz
-cp -r wordpress/* .
-rm -rf wordpress latest.tar.gz
+rm latest.tar.gz
+
+# Mover archivos de WordPress a la raíz del servidor web
+mv wordpress/* .
+rmdir wordpress
+
+# **Eliminar la página de inicio predeterminada de Apache**
+sudo rm /var/www/html/index.html /var/www/html/readme.html
 
 # Ajustar permisos y propiedad de los archivos
 chown -R www-data:www-data /var/www/html
@@ -43,11 +49,3 @@ chmod 640 /var/www/html/wp-config.php
 
 # Reiniciar Apache para aplicar cambios
 systemctl restart apache2
-
-# Instalar certificados SSL (opcional)
-# apt install -y certbot python3-certbot-apache
-# certbot --apache -d your-domain.com --non-interactive --agree-tos -m your-email@example.com
-
-# Habilitar firewall (opcional)
-# ufw allow 'Apache Full'
-# ufw enable
