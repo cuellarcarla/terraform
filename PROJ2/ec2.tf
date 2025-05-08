@@ -5,7 +5,6 @@ data "aws_ami" "ubuntu" {
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-*-24.04-amd64-server-*"]
-
   }
 
   filter {
@@ -15,6 +14,7 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
+
 
 # EC2 para Frontend (React)
 resource "aws_instance" "frontend_ec2" {
