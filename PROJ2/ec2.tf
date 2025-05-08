@@ -1,24 +1,6 @@
-# Buscar la AMI de Ubuntu más reciente
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-24.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
-
 # EC2 para Frontend (React)
 resource "aws_instance" "frontend_ec2" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = "ami-084568db4383264d4" # Usar la AMI específica
   instance_type          = var.frontend_instance_type
   key_name               = var.key_name
   subnet_id              = aws_subnet.public_subnet_1.id
@@ -94,7 +76,7 @@ resource "aws_instance" "frontend_ec2" {
 
 # EC2 para Backend (Django)
 resource "aws_instance" "backend_ec2" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = "ami-084568db4383264d4" # Usar la AMI específica
   instance_type          = var.backend_instance_type
   key_name               = var.key_name
   subnet_id              = aws_subnet.public_subnet_1.id
